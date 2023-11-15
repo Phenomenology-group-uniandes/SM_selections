@@ -8,32 +8,29 @@ else
   exit 1
 fi
 
-# Establish the number of cores
-
+# Establish the number of cores to use
 CPUS=2
-
 while getopts ":c:" opt; do
   case ${opt} in
-    c )
-      CPUS=$OPTARG
-      ;;
-    \? )
-      echo "Invalid option: $OPTARG" 1>&2
-      exit 1
-      ;;
-    : )
-      echo "Invalid option: $OPTARG requires an argument" 1>&2
-      exit 1
-      ;;
+  c)
+    CPUS=$OPTARG
+    ;;
+  \?)
+    echo "Invalid option: $OPTARG" 1>&2
+    exit 1
+    ;;
+  :)
+    echo "Invalid option: $OPTARG requires an argument" 1>&2
+    exit 1
+    ;;
   esac
 done
-shift $((OPTIND -1))
+shift $((OPTIND - 1))
 
-if [ "$CPUS" -gt "$(( $(nproc) / 2 ))" ]; then
-  echo "Error: The number of CPUs specified is greater than the "$(( $(nproc) / 2 ))" available"
+if [ "$CPUS" -gt "$(($(nproc) / 2))" ]; then
+  echo "Error: The number of CPUs specified is greater than the "$(($(nproc) / 2))" available"
   exit 1
 fi
-
 
 # update repo
 git pull
