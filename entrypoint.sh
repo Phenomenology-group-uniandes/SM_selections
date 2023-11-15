@@ -5,19 +5,19 @@ echo "Starting the container..."
 
 # Sourcing installed software
 echo "Sourcing installed software..."
-source_paths=(\
-  "/etc/bashrc" \
-  "/Collider/ROOT/installROOT/bin/thisroot.sh" \
-  "/Collider/env/bin/activate"\
-  )
+source_paths=(
+  "/etc/bashrc"
+  "/Collider/ROOT/installROOT/bin/thisroot.sh"
+  "/Collider/env/bin/activate"
+)
 for path in "${source_paths[@]}"; do
-    if [ -f "$path" ]; then
-        # shellcheck source=/dev/null
-        source "$path"
-    else
-        echo "Error: $path file not found"
-        exit 1
-    fi
+  if [ -f "$path" ]; then
+    # shellcheck source=/dev/null
+    source "$path"
+  else
+    echo "Error: $path file not found"
+    exit 1
+  fi
 done
 
 COLLIDER_DIR="/Collider"
@@ -38,9 +38,9 @@ python main.py
 # Change the owner of the project and output folder
 echo "Updating the owner"
 for dir in "$PROJECT_DIR" "$OUTPUT_DIR"; do
-    if [ -d "$dir" ]; then
-        chown -R "$(stat -c '1019:1019' "$dir")" "$dir"
-    fi
+  if [ -d "$dir" ]; then
+    chown -R "$(stat -c '1019:1019' "$dir")" "$dir"
+  fi
 done
 
 # Done
