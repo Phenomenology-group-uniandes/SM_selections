@@ -32,4 +32,9 @@
       "color": "#ff000068",
     }
   ],
+  //Shell
+  "[shellscript]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format",
+    "editor.formatOnSave": true,
+  },
 }
