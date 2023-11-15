@@ -8,6 +8,33 @@ else
   exit 1
 fi
 
+# Establish the number of cores
+
+CPUS=2
+
+while getopts ":c:" opt; do
+  case ${opt} in
+    c )
+      CPUS=$OPTARG
+      ;;
+    \? )
+      echo "Invalid option: $OPTARG" 1>&2
+      exit 1
+      ;;
+    : )
+      echo "Invalid option: $OPTARG requires an argument" 1>&2
+      exit 1
+      ;;
+  esac
+done
+shift $((OPTIND -1))
+
+if [ "$CPUS" -gt "$(( $(nproc) / 2 ))" ]; then
+  echo "Error: The number of CPUs specified is greater than the "$(( $(nproc) / 2 ))" available"
+  exit 1
+fi
+
+
 # update repo
 git pull
 
@@ -27,8 +54,9 @@ docker build -t sm_selections .
 mkdir -p "$OUTPUT_PATH"
 echo "Raw Data folder: $OUTPUT_PATH"
 
-# Run the container
+# Run the container, use 10 cores i,e 20 threads
 docker run -t \
+  --cpus="$CPUS" \
   --mount type=bind,source="$OUTPUT_PATH",target=/output \
   --mount type=bind,source="$(pwd)",target=/project \
   --name sm_selections_container \
