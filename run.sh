@@ -4,11 +4,14 @@
 if [ -f .env ]; then
   source .env
 else
-  echo "Error: .env file not found"
+  echo "Error: .env file not found, please create it with the OUTPUT_PATH variable"
   exit 1
 fi
 
-#update submodules
+# update repo
+git pull
+
+# update submodules
 git submodule update --init --recursive --remote
 
 # Remove the previous image
