@@ -20,23 +20,27 @@ for path in "${source_paths[@]}"; do
   fi
 done
 
+# Set up the environment to use ROOT, MadGraph and LHAPDF
 COLLIDER_DIR="/Collider"
 ROOT_BIN="$COLLIDER_DIR/ROOT/installROOT/bin/"
 MG5_BIN="$COLLIDER_DIR/MG5_aMC_v3_1_0/bin/"
-export PATH="${ROOT_BIN}:${MG5_BIN}:$PATH"
-
 LHAPDF_LIB="$COLLIDER_DIR/LHAPDF/lib/"
+export PATH="${ROOT_BIN}:${MG5_BIN}:$PATH"
 export LD_LIBRARY_PATH="${LHAPDF_LIB}:$LD_LIBRARY_PATH"
 
-# Run python script
-echo "Running the python script..."
+# Set up the project, install the requirements and run the python script
+echo "Setting up the project..."
 PROJECT_DIR="/project"
 OUTPUT_DIR="/output"
 touch "$OUTPUT_DIR/selections.log"
 cd "$PROJECT_DIR"
 # shellcheck source=/dev/null
 source ".env"
-pip install -r $PROJECT_DIR/hep_pheno_tools/requirements.txt
+pip install -q -r $PROJECT_DIR/hep_pheno_tools/requirements.txt
+pip install -q -r $PROJECT_DIR/requirements.txt
+
+# Run python script
+echo "Running the python script..."
 python main.py
 
 # Change the owner of the project and output folder
