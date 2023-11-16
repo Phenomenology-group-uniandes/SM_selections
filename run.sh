@@ -35,12 +35,14 @@ fi
 # Check if USER_ID exists in .env
 if ! grep -q "USER_ID" .env; then
   # If USER_ID does not exist, add it
+  printf "\n" >>.env
   echo "USER_ID=$(id -u)" >>.env
 fi
 
 # Check if GROUP_ID exists in .env
 if ! grep -q "GROUP_ID" .env; then
   # If GROUP_ID does not exist, add it
+  printf "\n" >>.env
   echo "GROUP_ID=$(id -g)" >>.env
 fi
 
