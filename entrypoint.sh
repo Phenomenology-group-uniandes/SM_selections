@@ -34,6 +34,7 @@ PROJECT_DIR="/project"
 OUTPUT_DIR="/output"
 touch "$OUTPUT_DIR/selections.log"
 cd "$PROJECT_DIR"
+# shellcheck source=/dev/null
 source ".env"
 pip install -r $PROJECT_DIR/hep_pheno_tools/requirements.txt
 python main.py
