@@ -15,4 +15,3 @@ RUN python -m venv env \
 COPY entrypoint.sh /Collider/entrypoint.sh
 RUN chmod +x /Collider/entrypoint.sh
 ENTRYPOINT ["/Collider/entrypoint.sh"]
-

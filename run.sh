@@ -41,9 +41,6 @@ git submodule update --init --recursive --remote
 # Remove the previous image
 docker rmi -f sm_selections
 
-# Remove the previous container if it exists
-docker rm -f sm_selections_container
-
 # Build the new image
 docker build -t sm_selections .
 

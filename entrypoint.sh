@@ -33,6 +33,7 @@ echo "Running the python script..."
 PROJECT_DIR="/project"
 OUTPUT_DIR="/output"
 cd "$PROJECT_DIR"
+pip install -r $PROJECT_DIR/hep_pheno_tools/requirements.txt
 python main.py
 
 # Change the owner of the project and output folder
