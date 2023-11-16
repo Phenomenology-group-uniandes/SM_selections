@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -e
 # shellcheck source=/dev/null
 if [ -f .env ]; then
   source .env
@@ -32,14 +32,23 @@ if [ "$CPUS" -gt "$(($(nproc) / 2))" ]; then
   exit 1
 fi
 
-# update repo
+# Check if USER_ID exists in .env
+if ! grep -q "USER_ID" .env; then
+  # If USER_ID does not exist, add it
+  echo "USER_ID=$(id -u)" >>.env
+fi
+
+# Check if GROUP_ID exists in .env
+if ! grep -q "GROUP_ID" .env; then
+  # If GROUP_ID does not exist, add it
+  echo "GROUP_ID=$(id -g)" >>.env
+fi
+
+# update repository
 git pull
 
 # update submodules
 git submodule update --init --recursive --remote
-
-# Remove the previous image
-docker rmi -f sm_selections
 
 # Build the new image
 docker build -t sm_selections .
@@ -50,6 +59,7 @@ echo "Raw Data folder: $OUTPUT_PATH"
 
 # Run the container, use 10 cores i,e 20 threads
 docker run -t \
+  --env-file .env \
   --cpus="$CPUS" \
   --mount type=bind,source="$OUTPUT_PATH",target=/output \
   --mount type=bind,source="$(pwd)",target=/project \

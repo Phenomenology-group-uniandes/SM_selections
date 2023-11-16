@@ -32,7 +32,9 @@ export LD_LIBRARY_PATH="${LHAPDF_LIB}:$LD_LIBRARY_PATH"
 echo "Running the python script..."
 PROJECT_DIR="/project"
 OUTPUT_DIR="/output"
+touch "$OUTPUT_DIR/selections.log"
 cd "$PROJECT_DIR"
+source ".env"
 pip install -r $PROJECT_DIR/hep_pheno_tools/requirements.txt
 python main.py
 
@@ -40,7 +42,7 @@ python main.py
 echo "Updating the owner"
 for dir in "$PROJECT_DIR" "$OUTPUT_DIR"; do
   if [ -d "$dir" ]; then
-    chown -R "$(stat -c '1019:1019' "$dir")" "$dir"
+    chown -R "${USER_ID}:${GROUP_ID}" "$dir"
   fi
 done
 
