@@ -1,5 +1,6 @@
 # This selection function is for the Z->ll channel
 
+import Atlas_Reader_13TeV as atlas_reader
 from hep_pheno_tools import delphes_reader
 from hep_pheno_tools.abstract_particle import get_kinematics_row
 
@@ -32,6 +33,8 @@ def lep_lep_selection(event, data_type):
     # Select the method to get good leptons based on the data type
     if data_type == "MonteCarlo":
         get_good_leptons = delphes_reader.classifier.get_good_leptons
+    elif data_type == "Data":
+        get_good_leptons = atlas_reader.classifier.get_good_leptons
     else:
         return "Error: data_type: {} not recognised".format(data_type)
 
