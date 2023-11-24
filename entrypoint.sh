@@ -41,7 +41,7 @@ pip install -q -r $PROJECT_DIR/requirements.txt
 
 # Run python script
 echo "Running the python script..."
-python main.py
+python src/main.py
 
 # Change the owner of the project and output folder
 echo "Updating the owner"

@@ -1,0 +1,8 @@
+# This install ROOT/PyROOT in a conda environment
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - root
+  - pip:
+    - -r requirements.txt # install from requirements.txt
