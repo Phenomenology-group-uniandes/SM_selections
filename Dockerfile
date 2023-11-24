@@ -3,13 +3,13 @@ FROM jjonesperez/pucp-madgraph-pythia-delphes:0.7
 # Update pip and install requirements
 WORKDIR /Collider/
 
-# Install python3
-RUN dnf install -y python-is-python3
+# # Install python3 as default python
+# RUN dnf install -y python-is-python3
 
 # Install python packages
-RUN python -m venv env \
+RUN python3 -m venv env \
     && source env/bin/activate \
-    && pip install --upgrade pip 
+    && pip3 install --upgrade pip 
 
 # Pass entrypoint script
 COPY entrypoint.sh /Collider/entrypoint.sh

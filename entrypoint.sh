@@ -36,12 +36,12 @@ touch "$OUTPUT_DIR/selections.log"
 cd "$PROJECT_DIR"
 # shellcheck source=/dev/null
 source ".env"
-pip install -q -r $PROJECT_DIR/hep_pheno_tools/requirements.txt
-pip install -q -r $PROJECT_DIR/requirements.txt
+pip3 install -q -r $PROJECT_DIR/src/hep_pheno_tools/requirements.txt
+pip3 install -q -r $PROJECT_DIR/requirements.txt
 
 # Run python script
 echo "Running the python script..."
-python src/main.py
+python3 src/main.py
 
 # Change the owner of the project and output folder
 echo "Updating the owner"
