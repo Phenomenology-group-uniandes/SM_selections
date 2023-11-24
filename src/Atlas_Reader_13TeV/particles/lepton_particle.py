@@ -15,7 +15,6 @@ class LeptonParticle(Particle):
         self.etcone20 = event.lep_etcone20[j] / 1000
         self.ptcone30 = event.lep_ptcone30[j] / 1000
         self.trig_match = event.lep_trigMatched[j]
-        print(event.lep_type[j])
         if event.lep_type[j] == 11:
             self.name = "e"
             self.kind = "electron"
