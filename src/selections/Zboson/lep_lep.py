@@ -45,13 +45,13 @@ def lep_lep_selection(event, data_type):
     if len(leptons) != 2:
         return None
     # Check that the leptons have opposite charge
-    if leptons[0] * leptons[1].charge >= 0:
+    if leptons[0].charge * leptons[1].charge >= 0:
         return None
     # Check that the leptons have the same flavour
     if leptons[0].kind != leptons[1].kind:
         return None
     # Check that the reconstructed Z mass is near the Z mass
-    reco_z = leptons[0] + leptons[1]
+    reco_z = leptons[0].tlv + leptons[1].tlv
     if not (RECO_Z_MIN <= reco_z.M() <= RECO_Z_MAX):
         return None
     # Calculate the kinematics row
