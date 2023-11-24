@@ -47,5 +47,9 @@ def get_good_jets(event):
 
 def get_good_leptons(event, kin_cuts=DEFAULT_CUTS):
     if not ("lep" in kin_cuts.keys()):
-        kin_cuts["lep"] = DEFAULT_CUTS["muon"]
+        kin_cuts["lep"] = (
+            kin_cuts["muon"]
+            if "muon" in kin_cuts.keys()
+            else DEFAULT_CUTS["muon"]
+        )
     return hpt_get_good_leptons({"lep": get_leptons(event)})
