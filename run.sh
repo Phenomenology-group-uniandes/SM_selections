@@ -52,6 +52,9 @@ git pull
 # update submodules
 git submodule update --init --recursive --remote
 
+# remove the old container
+docker rm -f sm_selections_container || true
+
 # Build the new image
 docker build -t sm_selections .
 
@@ -68,5 +71,5 @@ docker run -t \
   --name sm_selections_container \
   sm_selections
 
-# Remove the container
-docker rm -f sm_selections_container
+# # Remove the container
+# docker rm -f sm_selections_container
