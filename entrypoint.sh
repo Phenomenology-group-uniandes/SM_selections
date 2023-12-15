@@ -39,9 +39,23 @@ source ".env"
 pip3 install -q -r $PROJECT_DIR/src/hep_pheno_tools/requirements.txt
 pip3 install -q -r $PROJECT_DIR/requirements.txt
 
-# Run python script
+# Create a user with USER_ID and GROUP_ID
+echo "Creating a user..."
+groupadd -g "$GROUP_ID" user
+useradd -l -u "$USER_ID" -g user user
+export HOME=/home/user
+
+# Change the owner of the project and output folder
+echo "Updating the owner"
+for dir in "$PROJECT_DIR" "$OUTPUT_DIR"; do
+  if [ -d "$dir" ]; then
+    chown -R "${USER_ID}:${GROUP_ID}" "$dir"
+  fi
+done
+
+# Run python script under user
 echo "Running the python script..."
-python3 src/main.py
+su user -c "python3 $PROJECT_DIR/src/main.py"
 
 # Change the owner of the project and output folder
 echo "Updating the owner"
