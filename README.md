@@ -1,1 +1,2 @@
 # SM_selections
+[![CodeFactor](https://www.codefactor.io/repository/github/phenomenology-group-uniandes/sm_selections/badge/main)](https://www.codefactor.io/repository/github/phenomenology-group-uniandes/sm_selections/overview/main)
