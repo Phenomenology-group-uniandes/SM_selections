@@ -1,90 +1,66 @@
+import logging
 import os
 import sqlite3
-from urllib.parse import urljoin
 
-import pandas as pd
-import ROOT
-import wget
-from tqdm import tqdm
+from Atlas_Reader_13TeV.helpers import download_atlas_opendataset
+from selections import Zboson
 
-from selections.Zboson import lep_lep_selection
+# Archive directory, inside the project directory to store the results on the
+# repository
+ARCHIVE_DIR = os.path.join(os.getcwd(), "archive")
+os.makedirs(ARCHIVE_DIR, exist_ok=True)
 
-analysis = "2lep"
-data_type = "Data"
-file_names = [
-    "data_{}.{}.root".format(data_type, analysis)
-    for data_type in ["A", "B", "C", "D"]
-]
+# Data directory, inside a external drive to store the HUGE data files
+DATA_DIR = os.path.join(os.sep, "output")
+os.makedirs(DATA_DIR, exist_ok=True)
+EXP_DATA_DIR = os.path.join(DATA_DIR, "Data")
 
+# SQLite database file, inside the data directory to store the results
+DB_FILE = "sm_selected_events.sqlite"
+DB_PATH = os.path.join(DATA_DIR, DB_FILE)
+if os.path.exists(DB_PATH):
+    os.remove(DB_PATH)
+CONN = sqlite3.connect(DB_PATH)
 
-opendata_url = (
-    "https://atlas-opendata.web.cern.ch/atlas-opendata/samples/2020/"
-)
+# Experimental data
+EXP_DATASETS = {
+    # vector boson
+    "w_lep": "1lep",
+    "z_lep_lep": "2lep",
+    "z_tau_tau": "1lep1tau",
+    # higgs boson
+    "h_y_y": "GamGam",
+    "h_w_w_leptonic": "1lep",
+    "h_z_z_leptonic": "2lep",
+    # diboson
+    "wz_3l": "3lep",
+    "zz_4l": "4lep",
+    # top quark
+    "top_lep": "1lep",
+    "ttbar_semileptonic": "1lep",
+    # BSM Sequential Z'
+    "zprime_lep_lep": "2lep",
+}
 
-
-data_path = os.path.join(os.path.dirname(os.getcwd()), "archive", analysis)
-output_path = os.path.join(os.sep, "output", analysis)
-db_file = "kin_row.db"
-db_path = os.path.join(output_path, db_file)
-os.makedirs(data_path, exist_ok=True)
-os.makedirs(output_path, exist_ok=True)
-if os.path.exists(db_path):
-    os.remove(db_path)
-
-
-# Invariant mass histograms definition
-hist = ROOT.TH1F(
-    "z_mass",
-    "Dilepton invariant-mass ; Invariant Mass m_{ll} [GeV] ; events",
-    30,
-    66,
-    116,
-)
-canvas = ROOT.TCanvas("canvas", "canvas", 800, 600)
-canvas.SetLogy()
-conn = sqlite3.connect(db_path)
-
-
-def process_file(file_name):
-    relative_url = "/".join([analysis, data_type, file_name])
-    file_url = urljoin(opendata_url, relative_url)
-
-    file = os.path.join(output_path, file_name)
-
-    if not os.path.exists(file):
-        wget.download(file_url, out=file)
-
-    tree = ROOT.TChain("mini")
-    tree.Add(file)
-    n_batches = 100
-
-    batch_size = tree.GetEntries() // n_batches
-
-    def process_batch(n):
-        results = []
-        for i in range(batch_size):
-            tree.GetEntry(n * batch_size + i)
-            kin_row = lep_lep_selection(tree, "Data")
-            if kin_row:
-                results.append(kin_row)
-        df = pd.DataFrame.from_records(results)
-        df.to_sql(analysis, conn, if_exists="append", index=False)
-        for dat in df["reco_z_mass"]:
-            hist.Fill(dat)
-        hist.Draw()
-        canvas.Update()
-
-    list(tqdm(map(process_batch, range(n_batches)), total=n_batches))
+# Selectors
+SELECTORS = {
+    # vector boson
+    "z_lep_lep": Zboson.lep_lep_selection
+}
 
 
-from multiprocessing import Pool
+def main():
+    logging.basicConfig(
+        filename=os.path.join(ARCHIVE_DIR, "log.txt"), level=logging.INFO
+    )
+    logging.info("Downloading ATLAS open dataset files")
 
-with Pool(4) as p:
-    p.map(process_file, file_names)
+    for key, dataset in EXP_DATASETS.items():
+        if key in SELECTORS:
+            download_atlas_opendataset(dataset, os.path.join(EXP_DATA_DIR))
+
+    logging.info("Finished downloading ATLAS open dataset files")
 
 
-hist.Draw()
-canvas.Draw()
-canvas.SaveAs(os.path.join(data_path, "z_mass.pdf"))
-
-conn.close()
+if __name__ == "__main__":
+    main()
