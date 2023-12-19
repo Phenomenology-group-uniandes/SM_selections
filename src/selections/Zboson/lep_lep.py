@@ -36,7 +36,7 @@ def lep_lep_selection(event, data_type):
     elif data_type == "Data":
         get_good_leptons = atlas_reader.classifier.get_good_leptons
     else:
-        return "Error: data_type: {} not recognised".format(data_type)
+        raise ValueError("data_type: {} not recognised".format(data_type))
 
     # Get the good leptons, ie. leptons that pass the kinematic cuts
     leptons = get_good_leptons(event, kin_cuts)
