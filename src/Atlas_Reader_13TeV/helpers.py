@@ -45,6 +45,9 @@ def download_atlas_opendataset(analysis: str, output_path: str):
                 logging.error(
                     "Error downloading file: %s. Error: %s", file_url, e
                 )
-                continue
+                raise e
+        else:
+            logging.info("Skipping file, already exists: %s", file_path)
+    logging.info(f"Dataset {analysis} downloaded successfully.")
 
     return [str(file_path) for file_path in files_paths]
