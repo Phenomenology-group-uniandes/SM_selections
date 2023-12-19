@@ -51,13 +51,19 @@ SELECTORS = {
 
 def main():
     logging.basicConfig(
-        filename=os.path.join(ARCHIVE_DIR, "log.txt"), level=logging.INFO
+        filename=os.path.join(ARCHIVE_DIR, "main.log"), level=logging.INFO
     )
     logging.info("Downloading ATLAS open dataset files")
 
-    for key, dataset in EXP_DATASETS.items():
-        if key in SELECTORS:
-            download_atlas_opendataset(dataset, os.path.join(EXP_DATA_DIR))
+    for key in SELECTORS:
+        if key not in EXP_DATASETS:
+            message = f"Selector {key} not found in EXP_DATASETS dictionary"
+            logging.error(message)
+            raise ValueError(message)
+        else:
+            download_atlas_opendataset(
+                EXP_DATASETS[key], os.path.join(EXP_DATA_DIR)
+            )
 
     logging.info("Finished downloading ATLAS open dataset files")
 
