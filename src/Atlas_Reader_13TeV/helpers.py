@@ -36,7 +36,7 @@ def download_atlas_opendataset(analysis: str, output_path: str):
     ]
 
     for file_url, file_path in zip(files_urls, files_paths):
-        logging.info("Downloading file: %s", file_url)
+        logging.info("Downloading file:\n\t%s", file_url)
         file_path.parent.mkdir(parents=True, exist_ok=True)
         if not file_path.exists():
             try:
@@ -47,7 +47,7 @@ def download_atlas_opendataset(analysis: str, output_path: str):
                 )
                 raise e
         else:
-            logging.info("Skipping file, already exists: %s", file_path)
+            logging.warning("Skipping file, already exists: %s", file_path)
     logging.info(f"Dataset {analysis} downloaded successfully.")
 
     return [str(file_path) for file_path in files_paths]

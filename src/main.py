@@ -1,6 +1,9 @@
 import logging
 import os
 import sqlite3
+import time
+from functools import wraps
+from subprocess import PIPE, Popen
 
 from Atlas_Reader_13TeV.helpers import download_atlas_opendataset
 from selections import Zboson
@@ -48,13 +51,26 @@ SELECTORS = {
     "z_lep_lep": Zboson.lep_lep_selection
 }
 
+ANALYSIS = SELECTORS.keys()
 
-def main():
-    logging.basicConfig(
-        filename=os.path.join(ARCHIVE_DIR, "main.log"), level=logging.INFO
-    )
-    logging.info("Downloading ATLAS open dataset files")
 
+def log_decorator(message):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            logging.info(f"Starting {message}")
+            result = func(*args, **kwargs)
+            logging.info(f"Finished {message}")
+            return result
+
+        return wrapper
+
+    return decorator
+
+
+@log_decorator("Downloading ATLAS open dataset files")
+def download_atlas_opendatasets():
+    """Download ATLAS open datasets"""
     for key in SELECTORS:
         if key not in EXP_DATASETS:
             message = f"Selector {key} not found in EXP_DATASETS dictionary"
@@ -65,7 +81,67 @@ def main():
                 EXP_DATASETS[key], os.path.join(EXP_DATA_DIR)
             )
 
-    logging.info("Finished downloading ATLAS open dataset files")
+
+@log_decorator("Running simulation")
+def run_simulation(flag_file):
+    return Popen(
+        [
+            "python",
+            os.path.join(os.getcwd(), "src", "run_simulations.py"),
+            "--data_dir",
+            DATA_DIR,
+            "--flag_file",
+            flag_file,
+        ],
+        stdout=PIPE,
+        stderr=PIPE,
+    )
+
+
+@log_decorator("Running selections")
+def process_files(flag_file):
+    i = 0
+    while i < 10:
+        i += 1
+        logging.info("Processing files")
+        time.sleep(1)
+
+
+@log_decorator("Running machine learning classifiers")
+def run_machine_learning_classifiers():
+    pass  # Your implementation here
+
+
+@log_decorator("Running analysis")
+def run_analysis():
+    pass  # Your implementation here
+
+
+def main():
+    # Initialize logging
+    logging.basicConfig(
+        filename=os.path.join(DATA_DIR, "main.log"), level=logging.INFO
+    )
+    logging.info("Starting")
+
+    # Download ATLAS open datasets
+    download_atlas_opendatasets()
+
+    # Run simulation
+    sim_flag_file = os.path.join(ARCHIVE_DIR, "simulation_in_progress.flag")
+    run_simulation(sim_flag_file)
+
+    # Process files
+    process_files(sim_flag_file)
+
+    # Run machine learning classifiers
+    run_machine_learning_classifiers()
+
+    # Run analysis
+    run_analysis()
+
+    # Finish
+    logging.info("Finished")
 
 
 if __name__ == "__main__":
