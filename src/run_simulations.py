@@ -5,13 +5,13 @@ import time
 
 # Get the command line arguments
 parser = argparse.ArgumentParser(description="Run simulations")
-parser.add_argument("--data_dir", type=str, help="Data directory")
+parser.add_argument("--data_dir", type=str, help="Monte Carlo Data directory")
 parser.add_argument("--flag_file", type=str, help="Flag file")
 args = parser.parse_args()
 
 # Create the log file
 logging.basicConfig(
-    filename=os.path.join(args.data_dir, "run_simulations.log"),
+    filename=os.path.join(os.dirname(args.data_dir), "run_simulations.log"),
     level=logging.INFO,
 )
 
