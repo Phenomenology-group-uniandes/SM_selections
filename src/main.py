@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import sqlite3
@@ -6,7 +7,6 @@ from functools import wraps
 from subprocess import PIPE, Popen
 
 from Atlas_Reader_13TeV.helpers import download_atlas_opendataset
-from selections import Zboson
 
 # Archive directory, inside the project directory to store the results on the
 # repository
@@ -17,6 +17,7 @@ os.makedirs(ARCHIVE_DIR, exist_ok=True)
 DATA_DIR = os.path.join(os.sep, "output")
 os.makedirs(DATA_DIR, exist_ok=True)
 EXP_DATA_DIR = os.path.join(DATA_DIR, "Data")
+MC_DATA_DIR = os.path.join(DATA_DIR, "MC")
 
 # SQLite database file, inside the data directory to store the results
 DB_FILE = "sm_selected_events.sqlite"
@@ -45,13 +46,8 @@ EXP_DATASETS = {
     "zprime_lep_lep": "2lep",
 }
 
-# Selectors
-SELECTORS = {
-    # vector boson
-    "z_lep_lep": Zboson.lep_lep_selection
-}
 
-ANALYSIS = SELECTORS.keys()
+ANALYSIS = EXP_DATASETS.keys()
 
 
 def log_decorator(message):
@@ -71,25 +67,23 @@ def log_decorator(message):
 @log_decorator("Downloading ATLAS open dataset files")
 def download_atlas_opendatasets():
     """Download ATLAS open datasets"""
-    for key in SELECTORS:
-        if key not in EXP_DATASETS:
-            message = f"Selector {key} not found in EXP_DATASETS dictionary"
-            logging.error(message)
-            raise ValueError(message)
-        else:
-            download_atlas_opendataset(
-                EXP_DATASETS[key], os.path.join(EXP_DATA_DIR)
-            )
+    return list(
+        map(
+            lambda x: download_atlas_opendataset(x, EXP_DATA_DIR),
+            set(EXP_DATASETS.values()),
+        )
+    )
 
 
 @log_decorator("Running simulation")
 def run_simulation(flag_file):
+    """Run madgraph simulation"""
     return Popen(
         [
             "python",
             os.path.join(os.getcwd(), "src", "run_simulations.py"),
             "--data_dir",
-            DATA_DIR,
+            MC_DATA_DIR,
             "--flag_file",
             flag_file,
         ],
@@ -100,11 +94,14 @@ def run_simulation(flag_file):
 
 @log_decorator("Running selections")
 def process_files(flag_file):
-    i = 0
-    while i < 10:
-        i += 1
-        logging.info("Processing files")
+    files_list = []
+
+    with open(os.path.join(DATA_DIR, "datasets.json"), "w") as json_file:
+        json.dump(EXP_DATASETS, json_file)
+    while os.path.exists(flag_file) or len(files_list) > 0:
         time.sleep(1)
+        logging.info("searching for new files")
+        files_list = os.listdir(MC_DATA_DIR)
 
 
 @log_decorator("Running machine learning classifiers")
