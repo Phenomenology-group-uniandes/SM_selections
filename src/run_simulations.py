@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import subprocess
 import time
 
 # Get the command line arguments
@@ -11,22 +12,33 @@ args = parser.parse_args()
 
 # Create the log file
 logging.basicConfig(
-    filename=os.path.join(os.dirname(args.data_dir), "run_simulations.log"),
+    filename=os.path.join(
+        os.path.dirname(args.data_dir), "run_simulations.log"
+    ),
     level=logging.INFO,
 )
 
 
 def main():
     logging.info("Starting")
-    ### Your implementation here ###
+    stout, stderr = subprocess.Popen(
+        [
+            "/Collider/MG5_aMC_v3_1_0/bin/mg5_aMC",
+            os.path.join(os.getcwd(), "src", "simulations", "test.mg5"),
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    ).communicate()
+    logging.info(f"stdout: {stout}".decode())
+    logging.info(f"stderr: {stderr}".decode())
+    time.sleep(10)
     logging.info("Finished")
 
 
-# create the flag file
-with open(args.flag_file, "w") as f:
-    f.write("simulation_in_progress")
-
 try:
+    # create the flag file
+    with open(args.flag_file, "w") as f:
+        f.write("simulation_in_progress")
     main()
 except Exception as e:
     logging.error(e)
