@@ -62,6 +62,9 @@ docker build -t sm_selections .
 mkdir -p "$OUTPUT_PATH"
 echo "Raw Data folder: $OUTPUT_PATH"
 
+# Remove the symbolic link if exists
+rm -f OutputFolder
+
 # Create a symbolic link to the output folder
 ln -sf "$OUTPUT_PATH" OutputFolder
 
