@@ -36,6 +36,7 @@ touch "$OUTPUT_DIR/selections.log"
 cd "$PROJECT_DIR"
 # shellcheck source=/dev/null
 source ".env"
+pip3 install --upgrade pip
 pip3 install -q -r $PROJECT_DIR/src/hep_pheno_tools/requirements.txt
 pip3 install -q -r $PROJECT_DIR/requirements.txt
 
