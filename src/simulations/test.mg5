@@ -1,0 +1,13 @@
+import model sm
+generate p p > z > e+ e-
+add process p p > z > mu+ mu-
+
+output /output/MC/zll
+
+launch /output/MC/zll
+shower=Pythia8
+detector=Delphes
+
+set nevents 10000
+
+exit
