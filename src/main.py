@@ -17,7 +17,9 @@ os.makedirs(ARCHIVE_DIR, exist_ok=True)
 DATA_DIR = os.path.join(os.sep, "output")
 os.makedirs(DATA_DIR, exist_ok=True)
 EXP_DATA_DIR = os.path.join(DATA_DIR, "Data")
+os.makedirs(EXP_DATA_DIR, exist_ok=True)
 MC_DATA_DIR = os.path.join(DATA_DIR, "MC")
+os.makedirs(MC_DATA_DIR, exist_ok=True)
 
 # SQLite database file, inside the data directory to store the results
 DB_FILE = "sm_selected_events.sqlite"
