@@ -1,42 +1,23 @@
-import hashlib
-import logging
+import argparse
 import os
 
-import pandas as pd
-import ROOT
+from .kin_extraction import kinematics_extraction
 
+parser = argparse.ArgumentParser(description="Process ROOT files")
+parser.add_argument("--sql_db_path", type=str, help="SQL database")
+parser.add_argument("--file_path", type=str, help="ROOT file path")
+parser.add_argument(
+    "--data_dir", type=str, help="Directory where data is stored"
+)
+parser.add_argument(
+    "--data_type", type=str, help="Type of data (MC or data)", default="MC"
+)
+args = parser.parse_args()
 
-def get_file_id(file_path):
-    return hashlib.md5(file_path.encode()).hexdigest()[:10]
+file_path = args.file_path
 
-
-def process_file(
-    file_path, sql_conn, sql_table, selection_function, data_type
-):
-    logging.info("Processing file: {}".format(file_path))
-    tree = ROOT.TChain("mini")
-    tree.Add(file_path)
-    n_entries = tree.GetEntries()
-    logging.info("Number of entries: {}".format(n_entries))
-
-    file_properties = {
-        "file_id": get_file_id(file_path),
-        "file_path": file_path,
-        "data_type": data_type,
-        "n_entries": n_entries,
-    }
-
-    pd.DataFrame.from_records([file_properties]).to_sql(
-        "tbFiles", sql_conn, if_exists="append", index=False
-    )
-
-    results = []
-    for event in tree:
-        kin_row = selection_function(event, data_type)
-        if kin_row:
-            kin_row["file_id"] = get_file_id(file_path)
-            results.append(kin_row)
-
-    df = pd.DataFrame.from_records(results)
-    df.to_sql(sql_table, sql_conn, if_exists="append", index=False)
-    logging.info("Finished processing file: {}".format(file_path))
+if __name__ == "__main__":
+    if kinematics_extraction(
+        file_path, args.sql_db_path, args.data_type, args.data_dir
+    ):
+        os.remove(file_path)
