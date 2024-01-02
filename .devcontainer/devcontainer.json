@@ -19,8 +19,5 @@
         "mutantdino.resourcemonitor"
       ]
     }
-  },
-  "hostRequirements": {
-    "cpus": 4
   }
 }
