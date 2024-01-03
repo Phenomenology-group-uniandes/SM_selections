@@ -2,7 +2,7 @@
   "name": "ColliderPhenoTools",
   "dockerFile": "../Dockerfile",
   "waitFor": "onCreateCommand",
-  "onCreateCommand": "ln -s /workspaces/SM_selections /project && mkdir /output && ln -s /output /project/OutputFolder",
+  "onCreateCommand": "ln -s /workspaces/SM_selections /project && mkdir /output && ln -s /output /project/OutputFolder && dnf install -y htop sqlite3",
   "updateContentCommand": "python3 -m pip install --upgrade pip && pip3 install -r requirements.txt && pip3 install -r src/hep_pheno_tools/requirements.txt",
   "customizations": {
     "codespaces": {
