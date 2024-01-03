@@ -29,8 +29,8 @@ def main():
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
     ).communicate()
-    logging.info(f"stdout: {stout}".decode())
-    logging.info(f"stderr: {stderr}".decode())
+    logging.info(f"stdout: {stout}".replace("\\n", "\n"))
+    logging.info(f"stderr: {stderr}".replace("\\n", "\n"))
     time.sleep(10)
     logging.info("Finished")
 
