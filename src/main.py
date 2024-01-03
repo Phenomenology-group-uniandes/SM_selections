@@ -30,24 +30,25 @@ CONN = sqlite3.connect(DB_PATH)
 
 # Experimental data
 EXP_DATASETS = {
-    # vector boson
-    "w_lep": "1lep",
+    # # vector boson
+    # "w_lep": "1lep",
     "z_lep_lep": "2lep",
-    "z_tau_tau": "1lep1tau",
-    # higgs boson
-    "h_y_y": "GamGam",
-    "h_w_w_leptonic": "1lep",
-    "h_z_z_leptonic": "2lep",
-    # diboson
-    "wz_3l": "3lep",
-    "zz_4l": "4lep",
-    # top quark
-    "top_lep": "1lep",
-    "ttbar_semileptonic": "1lep",
-    # BSM Sequential Z'
-    "zprime_lep_lep": "2lep",
+    # "z_tau_tau": "1lep1tau",
+    # # higgs boson
+    # "h_y_y": "GamGam",
+    # "h_w_w_leptonic": "1lep",
+    # "h_z_z_leptonic": "2lep",
+    # # diboson
+    # "wz_3l": "3lep",
+    # "zz_4l": "4lep",
+    # # top quark
+    # "top_lep": "1lep",
+    # "ttbar_semileptonic": "1lep",
+    # # BSM Sequential Z'
+    # "zprime_lep_lep": "2lep",
 }
-
+JSON_PATH = os.path.join(EXP_DATA_DIR, "datasets.json")
+json.dump(EXP_DATASETS, open(JSON_PATH, "w"))
 
 ANALYSIS = EXP_DATASETS.keys()
 
@@ -77,9 +78,8 @@ def download_atlas_opendatasets():
     )
 
 
-@log_decorator("Running simulation")
+@log_decorator("Launching madgraph simulation")
 def run_simulation(flag_file):
-    """Run madgraph simulation"""
     return Popen(
         [
             "python",
@@ -96,14 +96,55 @@ def run_simulation(flag_file):
 
 @log_decorator("Running selections")
 def process_files(flag_file):
-    files_list = []
+    from pathlib import Path
 
-    with open(os.path.join(DATA_DIR, "datasets.json"), "w") as json_file:
-        json.dump(EXP_DATASETS, json_file)
-    while os.path.exists(flag_file) or len(files_list) > 0:
+    data_dic = {
+        "Data": EXP_DATA_DIR,
+        "MonteCarlo": MC_DATA_DIR,
+    }
+    files_dic = {key: [] for key in data_dic.keys()}
+    while (
+        os.path.exists(flag_file)
+        or len(files_dic["Data"] + files_dic["MonteCarlo"]) > 0
+    ):
         time.sleep(1)
+        for key, root_files in files_dic.items():
+            for root_file in root_files:
+                print(root_file)
+                stout, stderr = Popen(
+                    [
+                        "python",
+                        os.path.join(
+                            os.getcwd(),
+                            "src",
+                            "process_file.py",
+                        ),
+                        "--sql_db_path",
+                        DB_PATH,
+                        "--file_path",
+                        root_file,
+                        "--data_type",
+                        key,
+                        "--json_path",
+                        JSON_PATH,
+                    ],
+                    stdout=PIPE,
+                    stderr=PIPE,
+                ).communicate()
+                process_output = stout
+                process_error = stderr
+                print(process_output)
+                print(process_error)
+        # It's important search for new files at the end of the loop, because
+        # the simulation script will create new files
         logging.info("searching for new files")
-        files_list = os.listdir(MC_DATA_DIR)
+        for key in files_dic.keys():
+            files_dic[key] = [
+                root_file.as_posix()
+                for root_file in Path(data_dic[key]).rglob("*.root")
+            ]
+        logging.info(f"files_dic: {files_dic}")
+    logging.info("No more files to process")
 
 
 @log_decorator("Running machine learning classifiers")
@@ -117,19 +158,13 @@ def run_analysis():
 
 
 def main():
-    # Initialize logging
-    logging.basicConfig(
-        filename=os.path.join(DATA_DIR, "main.log"), level=logging.INFO
-    )
-    logging.info("Starting")
-
     # Download ATLAS open datasets
     download_atlas_opendatasets()
 
     # Run simulation
     sim_flag_file = os.path.join(ARCHIVE_DIR, "simulation_in_progress.flag")
     run_simulation(sim_flag_file)
-
+    time.sleep(5)
     # Process files
     process_files(sim_flag_file)
 
@@ -139,9 +174,16 @@ def main():
     # Run analysis
     run_analysis()
 
-    # Finish
-    logging.info("Finished")
-
 
 if __name__ == "__main__":
-    main()
+    # Initialize logging
+    logging.basicConfig(
+        filename=os.path.join(DATA_DIR, "main.log"), level=logging.INFO
+    )
+    logging.info("Starting")
+    try:
+        main()
+    except Exception as e:
+        logging.error(e)
+    # Finish
+    logging.info("Finished")
