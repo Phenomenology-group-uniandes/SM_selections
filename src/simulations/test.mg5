@@ -8,6 +8,10 @@ launch /output/MC/zll
 shower=Pythia8
 detector=Delphes
 
-set nevents 10000
+set nevents 50000
+
+launch /output/MC/zll
+launch /output/MC/zll
+launch /output/MC/zll
 
 exit
