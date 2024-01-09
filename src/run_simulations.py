@@ -19,6 +19,29 @@ logging.basicConfig(
 )
 
 
+def create_mg5_output_directories():
+    logging.info("Creating MG5 output directories")
+    try:
+        stout, stderr = subprocess.Popen(
+            [
+                "/Collider/MG5_aMC_v3_1_0/bin/mg5_aMC",
+                os.path.join(
+                    os.getcwd(), "src", "simulations", "create_outputs.mg5"
+                ),
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        ).communicate()
+        logging.info(f"stdout: {stout}".replace("\\n", "\n"))
+        logging.info(f"stderr: {stderr}".replace("\\n", "\n"))
+        time.sleep(10)
+        logging.info("Finished")
+        return True
+    except Exception as e:
+        logging.error(e)
+        return False
+
+
 def main():
     logging.info("Starting")
     stout, stderr = subprocess.Popen(

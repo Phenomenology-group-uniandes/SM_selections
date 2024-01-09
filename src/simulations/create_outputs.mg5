@@ -1,0 +1,96 @@
+import model sm-no_b_mass
+set zerowidth_tchannel False
+
+# Z jets
+generate p p > z @0 QED = 1
+add process p p > z j @1 QED = 1
+add process p p > z j j @2 QED = 1
+output /output/MC/z_jets
+
+# W jets
+define wpm = w+ w-
+generate p p > wpm @0  QED = 1
+add process p p > wpm j @1  QED = 1
+add process p p > wpm j j @2  QED = 1
+output /output/MC/w_jets
+
+# Diboson WW
+define wpm = w+ w-
+generate p p > wpm wpm
+output /output/MC/diboson/ww
+
+# Diboson WZ
+generate p p > wpm z
+output /output/MC/diboson/wz
+
+# Diboson ZZ
+generate p p > z z @0
+output /output/MC/diboson/zz
+
+# ttbar + jets
+generate p p > t t~ $$ z @0
+add process p p > t t~ j $$ z @1
+add process p p > t t~ j j $$ z @2
+output /output/MC/ttbar
+
+# Single top - tchannel production
+define top = t t~
+define wpm = w+ w-
+generate p p > top j $$ wpm @0
+add process p p > top wpm  @0
+output /output/MC/single_top
+
+# QCD
+generate p p > j @0 QED=0
+add process p p > j j @1 QED=0
+add process p p > j j j @2 QED=0
+output /output/MC/qcd
+
+# Triboson WWW
+define wpm = w+ w-
+generate p p > wpm wpm wpm
+output /output/MC/triboson/www
+
+# Triboson WWZ
+define wpm = w+ w-
+generate p p > wpm wpm z
+output /output/MC/triboson/wwz
+
+# Triboson WZZ
+define wpm = w+ w-
+generate p p > wpm z z
+output /output/MC/triboson/wzz
+
+# Triboson ZZZ
+generate p p > z z z @0
+output /output/MC/triboson/zzz
+
+# Z VBF
+generate p p > z j j @0 QCD=0
+output /output/MC/z_vbf
+
+# W VBF
+define wpm = w+ w-
+generate p p > wpm j j @0 QCD=0
+output /output/MC/w_vbf
+
+# h vbf
+generate p p > h j j $$ z @0 QCD=0
+output /output/MC/h_vbf
+
+import model heft-no_b_mass
+
+# h + jets
+generate p p > h @0 QED=0
+add process p p > h j @1 QED=0
+add process p p > h j j @2 QED=0
+output /output/MC/h_jets
+
+# h z
+generate p p > h z
+output /output/MC/hz
+
+# h w
+define wpm = w+ w-
+generate p p > h wpm
+output /output/MC/hw
