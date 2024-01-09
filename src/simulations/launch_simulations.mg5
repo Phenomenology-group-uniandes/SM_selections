@@ -1,0 +1,89 @@
+launch /output/MC/z_jets
+  shower=Pythia8
+  detector=Delphes
+  set nevents 50000
+  /workspaces/SM_selections/src/simulations/pythia8_card_default.dat
+
+launch /output/MC/w_jets
+  shower=Pythia8
+  detector=Delphes
+  set nevents 50000
+  /workspaces/SM_selections/src/simulations/pythia8_card_default.dat
+
+launch /output/MC/diboson/ww
+  shower=Pythia8
+  detector=Delphes
+  set nevents 50000
+  /workspaces/SM_selections/src/simulations/pythia8_card_default.dat
+
+launch /output/MC/diboson/wz
+  shower=Pythia8
+  detector=Delphes
+  set nevents 50000
+  /workspaces/SM_selections/src/simulations/pythia8_card_default.dat
+
+launch /output/MC/diboson/zz
+  shower=Pythia8
+  detector=Delphes
+  set nevents 50000
+  /workspaces/SM_selections/src/simulations/pythia8_card_default.dat
+
+launch /output/MC/ttbar
+  shower=Pythia8
+  detector=Delphes
+  set nevents 50000
+  /workspaces/SM_selections/src/simulations/pythia8_card_default.dat
+
+launch /output/MC/qcd
+  shower=Pythia8
+  detector=Delphes
+  set nevents 50000
+  /workspaces/SM_selections/src/simulations/pythia8_card_default.dat
+
+launch /output/MC/single_top
+  shower=Pythia8
+  detector=Delphes
+  set nevents 50000
+  /workspaces/SM_selections/src/simulations/pythia8_card_default.dat
+
+launch /output/MC/triboson/www
+  shower=Pythia8
+  detector=Delphes
+  set nevents 50000
+  /workspaces/SM_selections/src/simulations/pythia8_card_default.dat
+
+launch /output/MC/triboson/wwz
+  shower=Pythia8
+  detector=Delphes
+  set nevents 50000
+  /workspaces/SM_selections/src/simulations/pythia8_card_default.dat
+
+launch /output/MC/triboson/wzz
+  shower=Pythia8
+  detector=Delphes
+  set nevents 50000
+  /workspaces/SM_selections/src/simulations/pythia8_card_default.dat
+
+launch /output/MC/triboson/zzz
+  shower=Pythia8
+  detector=Delphes
+  set nevents 50000
+  /workspaces/SM_selections/src/simulations/pythia8_card_default.dat
+
+launch /output/MC/z_vbf
+  shower=Pythia8
+  detector=Delphes
+  set nevents 50000
+  /workspaces/SM_selections/src/simulations/pythia8_card_default.dat
+
+launch /output/MC/w_vbf
+  shower=Pythia8
+  detector=Delphes
+  set nevents 50000
+  /workspaces/SM_selections/src/simulations/pythia8_card_default.dat
+
+launch /output/MC/h_vbf
+  shower=Pythia8
+  detector=Delphes
+  set nevents 50000
+  /workspaces/SM_selections/src/simulations/pythia8_card_default.dat
